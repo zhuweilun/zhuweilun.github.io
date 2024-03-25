@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Personal Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 50%;
+    }
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .message {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+    }
+    .message .author {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .message .content {
+      margin-bottom: 10px;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #f2f2f2;
+    }
+    .navbar-left {
+      margin-right: auto;
+    }
+    .navbar-right {
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-left">
+      <button onclick="showAboutPage()">About</button>
+      <button onclick="showChatPage()">Chat</button>
+    </div>
+    <div class="navbar-right">
+      <button onclick="showLoginPage()">Login</button>
+      <button onclick="showSignUpPage()">Sign up</button>
+    </div>
+  </div>
+
+  <div class="container" id="aboutPage" style="display:none;">
+    <h1>My Personal Page</h1>
+    <img src="your_photo.jpg" alt="Your Photo">
+    <p>A brief introduction about myself...</p>
+    <p>Visitor Count: <span id="visitorCount">0</span></p>
+  </div>
+
+  <div class="container" id="chatPage" style="display:none;">
+    <h2>Leave a Message</h2>
+    <input type="text" id="author" placeholder="Your Name"><br>
+    <textarea id="message" rows="4" placeholder="Type your message here..." onkeydown="if(event.keyCode === 116) event.preventDefault();"></textarea>
+    <button onclick="addMessage()">Post Message</button>
+    <div id="messageBoard"></div>
+  </div>
+
+  <script>
+    // Page Navigation
+    const currentPage = sessionStorage.getItem('currentPage');
+
+    if (currentPage === 'chatPage') {
+      showChatPage();
+    } else {
+      showAboutPage(); // Default to about page
+    }
+
+    function showAboutPage() {
+      document.getElementById('aboutPage').style.display = 'block';
+      document.getElementById('chatPage').style.display = 'none';
+      sessionStorage.setItem('currentPage', 'aboutPage');
+    }
+
+    function showChatPage() {
+      document.getElementById('aboutPage').style.display = 'none';
+      document.getElementById('chatPage').style.display = 'block';
+      sessionStorage.setItem('currentPage', 'chatPage');
+    }
+
+    // Message Board
+    let uniqueAuthors = [];
+
+    function addMessage() {
+      const author = document.getElementById('author').value.trim();
+      const message = document.getElementById('message').value.trim();
+      
+      if (author === '' || message === '') {
+        return;
+      }
+
+      const messageBoard = document.getElementById('messageBoard');
+      const div = document.createElement('div');
+      div.classList.add('message');
+      const authorElem = document.createElement('div');
+      authorElem.classList.add('author');
+      authorElem.textContent = author;
+      const contentElem = document.createElement('div');
+      contentElem.classList.add('content');
+      contentElem.textContent = message;
+      div.appendChild(authorElem);
+      div.appendChild(contentElem);
+      messageBoard.prepend(div);
+      document.getElementById('author').value = '';
+      document.getElementById('message').value = '';
+
+      // Increment visit count only if author is unique
+      if (!uniqueAuthors.includes(author)) {
+        let visitorCount = parseInt(sessionStorage.getItem('visitorCount')) || 0;
+        visitorCount++;
+        sessionStorage.setItem('visitorCount', visitorCount);
+        document.getElementById('visitorCount').innerText = visitorCount;
+        uniqueAuthors.push(author);
+      }
+    }
+  </script>
+</body>
+</html>
